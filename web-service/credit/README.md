@@ -1,60 +1,87 @@
-# Практична робота № 1 — Створення веб-сервісу за допомогою Spring Boot
+# Практична робота № 2 — Create API (Spring Boot)
 
-Це **початкова версія** проєкту `credit`. Практична робота № 2 — продовження **цього самого проєкту**: у ній метод `greet()` видаляється, а натомість додається `POST /api/create` для створення картки в базі даних.
+Готовий навчальний проєкт **credit**: створення картки через `POST /api/create` збереженням до бази даних H2.
 
-## Параметри проєкту
+> Увага: початкові проєкти `account` та `credit` з навчального курсу не були надані. Це самостійний варіант за вимогами завдання; для повного збігу пакетів, назв методів і типу БД із викладацьким прикладом треба порівняти з проєктом `account`.
 
-- Назва: `credit`
-- Group ID / пакет: `ua.edu.kibit` / `ua.edu.kibit.credit`
-- Версія: `0.0.1-SNAPSHOT`
-- Java: 17
-- Spring Boot: 3.5.16
-- Порт: `8082`
+## Вимоги
 
-## Вимоги практичної роботи № 1
+- **JDK 17 або новіша**.
+- **Maven 3.9+**, або вбудований Maven в IntelliJ IDEA.
+- Інтернет для першого завантаження Maven-залежностей.
 
-- `CreditApplication` — головний клас Spring Boot.
-- `ua.edu.kibit.credit.controller.CreditController` — REST-контролер.
-- `@RestController`, `@GetMapping("greet")` — анотації.
-- `greet()` повертає `Greetings, Maksym!`.
-- `src/main/resources/application.yml` — налаштування порту 8082.
+## Запуск у IntelliJ IDEA
 
-## Запуск через IntelliJ IDEA
+1. Відкрийте папку `credit` як Maven-проєкт (має завантажитися `pom.xml`).
+2. Дочекайтеся завантаження залежностей Maven.
+3. У `src/main/java/ua/edu/kibit/credit/CreditApplication.java` запустіть метод `main`.
+4. У консолі має з'явитися повідомлення на зразок `Tomcat started on port 8082`.
 
-1. Відкрийте **цю окрему папку** `credit` як Maven-проєкт (знайдіть `pom.xml`).
-2. Встановіть JDK 17 як Project SDK.
-3. Дочекайтесь завантаження залежностей Maven.
-4. Запустіть `CreditApplication.main()`.
-5. Перевірте у браузері: http://localhost:8082/greet
-
-Очікувана відповідь:
-
-```text
-Greetings, Maksym!
-```
-
-**Увага:** перед запуском зупиніть інший `credit`, який працює на порту 8082 (наприклад, із практичної роботи № 2).
-
-## Створення та перевірка JAR
-
-У IntelliJ IDEA: **Maven → credit → Lifecycle → package**.
-
-Або у терміналі (за наявності Maven):
+З термінала з папки `credit`:
 
 ```bash
 mvn clean package
 java -jar target/credit-0.0.1-SNAPSHOT.jar
 ```
 
-Після запуску JAR перевірте `http://localhost:8082/greet`.
+`mvn clean package` також виконує тест, що перевіряє код 201, JSON-відповідь і збереження запису.
 
-## Як узгодити з практичною роботою № 2
+## Тестування POST API
 
-Ці два архіви — **дві послідовні версії одного проєкту**, а не два різні сервіси.
+**Linux, macOS або Git Bash:**
 
-1. Спочатку збережіть початкову версію № 1 у своєму GitHub-репозиторії в `web-service/credit` окремим комітом (наприклад, `Practical 1: create Spring Boot service`).
-2. Для перевірки або здачі № 1 збережіть JAR окремо від JAR практичної № 2: вони мають однакове ім'я.
-3. Потім замініть файли в **цьому самому Git-проєкті** на версію практичної № 2 і зробіть наступний коміт (наприклад, `Practical 2: implement card create API`).
-4. Після цього у головній гілці буде друга версія, а перша залишиться доступною в історії комітів. Можна додати Git-теги `practice-1` і `practice-2` для зручних посилань.
+```bash
+curl -i -X POST http://localhost:8082/api/create \
+  -H "Content-Type: application/json" \
+  -d '{"email":"firstname.lastname@kibit.edu.ua","amount":100}'
+```
 
-**Не розпаковуйте архів № 1 поверх уже працюючої локальної практичної № 2.** Для збірки тримайте їх у різних папках. Для здачі кожної практичної потрібен відповідний JAR і посилання на версію коду в GitHub.
+**Windows PowerShell:**
+
+```powershell
+Invoke-RestMethod -Uri 'http://localhost:8082/api/create' `
+  -Method POST `
+  -ContentType 'application/json' `
+  -Body '{"email":"firstname.lastname@kibit.edu.ua","amount":100}'
+```
+
+Очікуваний HTTP-статус: **201 Created**. JSON-відповідь:
+
+```json
+{"statusCode":"201","statusMessage":"Card created successfully"}
+```
+
+## Перевірка таблиці
+
+База H2 зберігається локально у файлі `creditdb.mv.db` і **не зникає** після перезапуску.
+
+1. Поки застосунок працює, відкрийте `http://localhost:8082/h2-console`.
+2. JDBC URL: `jdbc:h2:file:./creditdb;DB_CLOSE_ON_EXIT=FALSE`.
+3. User Name: `sa`; Password — порожній.
+4. Виконайте запит:
+
+```sql
+SELECT card_id, email, amount, created_at, created_by, updated_at, updated_by
+FROM card
+ORDER BY card_id DESC;
+```
+
+> Консоль H2 увімкнено лише для локальної навчальної розробки. Не відкривайте її для загального доступу.
+
+## Розміщення у GitHub
+
+Скопіюйте папку `credit` разом із `pom.xml`, `src/`, `README.md` та `.gitignore` до `web-service/credit` у вашому персональному Git-репозиторії.
+Від кореня **вашого репозиторію** виконайте:
+
+```bash
+git add web-service/credit
+git commit -m "Add credit create API practical work 2"
+git push
+```
+
+У Google Classroom потрібно додати:
+
+1. **Посилання на папку `web-service/credit`** у персональному GitHub-репозиторії.
+2. **Файл `credit-0.0.1-SNAPSHOT.jar`**, що утворився після `mvn clean package` у папці `target/`.
+
+Цей вихідний ZIP не містить зібраного JAR: у середовищі підготовки проєкту не було Maven та доступу до завантаження Spring-залежностей. Зберіть його локально за наведеною командою. Публікація у ваш GitHub і здавання в Classroom також виконуються з вашого облікового запису.
