@@ -1,3 +1,4 @@
+
 package ua.edu.kibit.credit.service;
 
 import ua.edu.kibit.credit.dto.CardData;
@@ -5,4 +6,10 @@ import ua.edu.kibit.credit.dto.CardData;
 public interface CardService {
 
     void createCard(CardData data);
+
+    CardData retrieveCard(Long cardId);
+
+    void updateCard(Long cardId, CardData data);
+
+    void deleteCard(Long cardId);
 }

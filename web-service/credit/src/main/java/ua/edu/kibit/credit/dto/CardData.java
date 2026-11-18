@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public class CardData {
+public class  CardData {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email address")

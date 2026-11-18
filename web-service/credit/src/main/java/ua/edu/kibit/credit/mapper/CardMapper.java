@@ -1,3 +1,4 @@
+
 package ua.edu.kibit.credit.mapper;
 
 import org.springframework.stereotype.Component;
@@ -12,5 +13,12 @@ public class CardMapper {
         card.setEmail(data.getEmail());
         card.setAmount(data.getAmount());
         return card;
+    }
+
+    public CardData toData(Card card) {
+        CardData data = new CardData();
+        data.setEmail(card.getEmail());
+        data.setAmount(card.getAmount());
+        return data;
     }
 }
